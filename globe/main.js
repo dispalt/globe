@@ -47,7 +47,7 @@ if(System.support.webgl === false){
       globe.addLines(set);
       set = set.slice(5);
       i++;
-    }, 1000);
+    }, 25);
     globe.animate();
   }, false);
   xhr.open('GET', 'data/population909500.json', true);

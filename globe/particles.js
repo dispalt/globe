@@ -12,7 +12,7 @@ function calculateParticles(splineGeo, particlesGeo, particleColors) {
   var particleColor = splineGeo.colors[splineGeo.colors.length - 1].clone();		
   var particleCount = Math.floor(100000 / 8000 / points.length) + 1;
 
-  particleCount = 1000;//constrain(particleCount,1,100);
+  particleCount = 100;//constrain(particleCount,1,100);
 
   var particleSize = splineGeo.size;			
   for( var s=0; s<particleCount; s++ ){
