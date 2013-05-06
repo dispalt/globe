@@ -17,7 +17,7 @@ DAT.Globe = function(container, colorFn) {
 
   colorFn = colorFn || function(x) {
     var c = new THREE.Color();
-    c.setHSV( ( 0.6 - ( x * 0.5 ) ), 1.0, 1.0 );
+    c.setHSL( ( 0.6 - ( x * 0.5 ) ), 1.0, 1.0 );
     return c;
   };
 
@@ -276,19 +276,19 @@ DAT.Globe = function(container, colorFn) {
   function makeConnectionLineGeometry(start, end, value){
     // console.log("making connection between " + exporter.countryName + " and " + importer.countryName + " with code " + type );
 
-    var distance = start.clone().subSelf(end).length();    
+    var distance = start.clone().sub(end).length();    
 
     //  how high we want to shoot the curve upwards
     var anchorHeight = globeRadius + distance * 0.7;
 
     //  midpoint for the curve
-    var mid = start.clone().lerpSelf(end,0.5);    
+    var mid = start.clone().lerp(end,0.5);    
     var midLength = mid.length();
     mid.normalize();
     mid.multiplyScalar( midLength + distance * 0.7 );      
 
     //  the normal from start to end
-    var normal = (new THREE.Vector3()).sub(start,end);
+    var normal = (new THREE.Vector3()).subVectors(start,end);
     normal.normalize();
 
     /*
@@ -306,8 +306,8 @@ DAT.Globe = function(container, colorFn) {
     var distanceHalf = distance * 0.5;
 
     var startAnchor = start;
-    var midStartAnchor = mid.clone().addSelf( normal.clone().multiplyScalar( distanceHalf ) );          
-    var midEndAnchor = mid.clone().addSelf( normal.clone().multiplyScalar( -distanceHalf ) );
+    var midStartAnchor = mid.clone().add( normal.clone().multiplyScalar( distanceHalf ) );          
+    var midEndAnchor = mid.clone().add( normal.clone().multiplyScalar( -distanceHalf ) );
     var endAnchor = end;
 
     //  now make a bezier curve out of the above like so in the diagram
@@ -373,7 +373,7 @@ DAT.Globe = function(container, colorFn) {
         spline;
 
     var subgeo = new THREE.Geometry();
-    spline = makeConnectionLineGeometry(start, end, 1000000);
+    spline = makeConnectionLineGeometry(start, end, 480000000);
 
     color = colorFn(size);
 
@@ -500,7 +500,7 @@ DAT.Globe = function(container, colorFn) {
     renderer.render(scene, camera);
     renderer.render(sceneAtmosphere, camera);
 
-    scene.__objects.forEach(function(mesh) {
+    scene.traverse(function(mesh) {
       if (mesh.update !== undefined) {
         mesh.update();
       }

@@ -12,7 +12,7 @@ function calculateParticles(splineGeo, particlesGeo, particleColors) {
   var particleColor = splineGeo.colors[splineGeo.colors.length - 1].clone();		
   var particleCount = Math.floor(100000 / 8000 / points.length) + 1;
 
-  particleCount = 100;//constrain(particleCount,1,100);
+  particleCount = 10;//constrain(particleCount,1,100);
 
   var particleSize = splineGeo.size;			
   for( var s=0; s<particleCount; s++ ){
@@ -22,7 +22,7 @@ function calculateParticles(splineGeo, particlesGeo, particleColors) {
     var desiredIndex = s / particleCount * points.length;
     var rIndex = constrain(Math.floor(desiredIndex),0,points.length-1);
 
-    var point = points[rIndex];						
+    var point = points[rIndex];
     var particle = point.clone();
     particle.moveIndex = rIndex;
     particle.nextIndex = rIndex+1;
@@ -30,10 +30,10 @@ function calculateParticles(splineGeo, particlesGeo, particleColors) {
       particle.nextIndex = 0;
     particle.lerpN = 0;
     particle.path = points;
-    particlesGeo.vertices.push( particle );	
+    particlesGeo.vertices.push( particle );
     particle.size = particleSize;
-    particleColors.push( particleColor );						
-  }			
+    particleColors.push( particleColor );
+  }
 }
 
 function addParticles(splineOutline) {
@@ -48,35 +48,41 @@ function addParticles(splineOutline) {
   };
 
   uniforms = {
-    amplitude: { type: "f", value: 1.0 },
+    amplitude: { type: "f", value: 10.0 },
     color:     { type: "c", value: new THREE.Color( 0xffffff ) },
-    texture:   { type: "t", value: 0, texture: THREE.ImageUtils.loadTexture( "images/particleA.png" ) },
+    flare:   { type: "t", value: THREE.ImageUtils.loadTexture( "images/particleA.png" ) }
   };
 
-  var shaderMaterial = new THREE.ShaderMaterial( {
+  var particleShader = new THREE.ShaderMaterial( {
 
-    uniforms: 		uniforms,
+    uniforms:       uniforms,
     attributes:     attributes,
     vertexShader:   document.getElementById( 'vertexshader' ).textContent,
     fragmentShader: document.getElementById( 'fragmentshader' ).textContent,
 
-    blending: 		THREE.AdditiveBlending,
-    depthTest: 		true,
-    depthWrite: 	false,
-    transparent:	true,
-    // sizeAttenuation: true,
+    blending:     THREE.AdditiveBlending,
+    depthTest:    true,
+    depthWrite:   false,
+    transparent:  true
+    //sizeAttenuation: true,
   });
 
 
   calculateParticles(splineOutline.geometry, particlesGeo, particleColors);
 
-  var particleGraphic = THREE.ImageUtils.loadTexture("images/map_mask.png");
-  var particleMat = new THREE.ParticleBasicMaterial( { map: particleGraphic, color: 0xffffff, size: 60, 
-                            blending: THREE.NormalBlending, transparent:true, 
-                            depthWrite: false, vertexColors: true,
-                            sizeAttenuation: true } );
+  var particleMat = new THREE.ParticleBasicMaterial({ 
+    map: THREE.ImageUtils.loadTexture("images/map_mask.png"),
+    color: 0xffffff,
+    size: 60,
+    blending: THREE.NormalBlending,
+    transparent:true,
+    depthWrite: false,
+    vertexColors: true
+   // sizeAttenuation: true
+  });
+
   particlesGeo.colors = particleColors;
-  var pSystem = new THREE.ParticleSystem( particlesGeo, shaderMaterial );
+  var pSystem = new THREE.ParticleSystem( particlesGeo, particleShader);
   pSystem.dynamic = true;
   splineOutline.add( pSystem );
 
@@ -95,7 +101,7 @@ function addParticles(splineOutline) {
       var particle = this.geometry.vertices[i];
       var path = particle.path;
       var moveLength = path.length;
-      
+
       particle.lerpN += 0.05;
       if(particle.lerpN > 1){
         particle.lerpN = 0;
@@ -109,13 +115,13 @@ function addParticles(splineOutline) {
 
       var currentPoint = path[particle.moveIndex];
       var nextPoint = path[particle.nextIndex];
-      
+
 
       particle.copy( currentPoint );
-      particle.lerpSelf( nextPoint, particle.lerpN );			
+      particle.lerp( nextPoint, particle.lerpN );			
     }
     this.geometry.verticesNeedUpdate = true;
-  };		
+  };
 
   return splineOutline;
 }
