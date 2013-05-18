@@ -1,0 +1,9 @@
+#!/usr/bin/env node
+
+var server = require('../lib/server');
+
+function main() {
+  server.run();
+};
+
+main();
