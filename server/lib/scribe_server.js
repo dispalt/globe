@@ -12,7 +12,7 @@ var dns = require('dns');
 var gi = require('geoip-lite');
 
 var listOfTelescopes = [];
-var DESIRED_RATE = 10;
+var DESIRED_RATE = 30;
 var INTERVAL_MS = 1000;
 
 
@@ -21,13 +21,14 @@ function resetList() {
 }
 
 
-function resultMessage(checkType, status, availability, geo) {
+function resultMessage(checkType, status, availability, monitoringZoneId, geo) {
   return {
     type: "result",
     data: {
       checkType: checkType,
       status: status,
       availability: availability,
+      monitoringZoneId: monitoringZoneId,
       geo: geo
   }};
 }
@@ -65,7 +66,7 @@ function processMsg(msg) {
       // process.exit();
     }
     if (geo) {
-      var result = resultMessage(te.checkType, te.status, te.availability, geo);
+      var result = resultMessage(te.checkType, te.status, te.availability, te.monitoringZoneId, geo);
       listOfTelescopes.push(result);
     }
   });
