@@ -12,11 +12,33 @@ var dns = require('dns');
 var gi = require('geoip-lite');
 
 var listOfTelescopes = [];
-var DESIRED_RATE = 100;
+var DESIRED_RATE = 10;
+var INTERVAL_MS = 1000;
 
 
 function resetList() {
   listOfTelescopes = [];
+}
+
+
+function resultMessage(checkType, status, availability, geo) {
+  return {
+    type: "result",
+    data: {
+      checkType: checkType,
+      status: status,
+      availability: availability,
+      geo: geo
+  }};
+}
+
+function sampleMessage(rate, sample) {
+  return {
+    type: "sample",
+    data: {
+      sample: sample,
+      rate: rate
+  }};
 }
 
 function processMsg(msg) {
@@ -43,12 +65,7 @@ function processMsg(msg) {
       // process.exit();
     }
     if (geo) {
-      var result = {
-        checkType: te.checkType,
-        status: te.status,
-        availability: te.availability,
-        geo: geo
-      };
+      var result = resultMessage(te.checkType, te.status, te.availability, geo);
       listOfTelescopes.push(result);
     }
   });
@@ -58,10 +75,24 @@ exports.run = function(emitter, port, host) {
   resetList();
 
   setInterval(function() {
-    var list = listOfTelescopes;
-    console.log("Serving " + list.length);
+    var list = listOfTelescopes,
+        num = list.length,
+        sample, toSend,
+        i;
+
+    if (num === 0) {
+      sample = 0;
+    } else {
+      sample = DESIRED_RATE / num / ((INTERVAL_MS * 1000));
+      console.log('Sample size ' + sample);
+    }
     resetList();
-  }, 1000);
+    toSend = Math.min(sample, DESIRED_RATE);
+    for (i = 0; i < toSend; i++) {
+      emitter.emit('target', list[i]);
+    }
+    emitter.emit('target', rateMessage());
+  }, INTERVAL_MS);
 
   var server = thrift.createServer(scribe, {
     Log: function(entries, success) {
