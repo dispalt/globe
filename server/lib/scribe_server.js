@@ -71,7 +71,7 @@ exports.run = function(emitter, port, host) {
       } catch (e1) {
         log.warn('scribe response error', {err: e1});
       }
-      entries.forEach(processMsg.bind(null, emitter));
+      entries.forEach(processMsg);
       return;
     }
   });
