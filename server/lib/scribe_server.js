@@ -91,7 +91,7 @@ exports.run = function(emitter, port, host) {
     for (i = 0; i < toSend; i++) {
       emitter.emit('target', list[i]);
     }
-    emitter.emit('target', rateMessage());
+    emitter.emit('target', sampleMessage());
   }, INTERVAL_MS);
 
   var server = thrift.createServer(scribe, {
