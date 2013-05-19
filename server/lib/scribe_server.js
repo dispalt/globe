@@ -83,7 +83,7 @@ exports.run = function(emitter, port, host) {
     if (num === 0) {
       sample = 0;
     } else {
-      sample = DESIRED_RATE / num / ((INTERVAL_MS * 1000));
+      sample = DESIRED_RATE / num / ((INTERVAL_MS / 1000));
       console.log('Sample size ' + sample);
     }
     resetList();
