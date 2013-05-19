@@ -83,11 +83,14 @@ exports.run = function(emitter, port, host) {
     if (num === 0) {
       sample = 0;
     } else {
-      sample = Math.max(DESIRED_RATE / num / ((INTERVAL_MS / 1000)), 1);
+      sample = DESIRED_RATE / num / ((INTERVAL_MS / 1000));
+      if (sample > 1) {
+        sample = 1;
+      }
       console.log('Sample size ' + sample);
     }
     resetList();
-    toSend = Math.min(sample, DESIRED_RATE);
+    toSend = Math.min(num, DESIRED_RATE);
     for (i = 0; i < toSend; i++) {
       emitter.emit('target', list[i]);
     }
