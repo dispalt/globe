@@ -49,7 +49,7 @@ function addParticles(splineOutline) {
 
   uniforms = {
     amplitude: { type: "f", value: 10.0 },
-    color:     { type: "c", value: new THREE.Color( 0xff0000 ) },
+    color:     { type: "c", value: new THREE.Color( 0xffffff ) },
     flare:   { type: "t", value: THREE.ImageUtils.loadTexture( "images/particleA.png" ) }
   };
 
@@ -72,7 +72,7 @@ function addParticles(splineOutline) {
 
   var particleMat = new THREE.ParticleBasicMaterial({ 
     map: THREE.ImageUtils.loadTexture("images/map_mask.png"),
-    color: 0xff0000,
+    color: 0xffffff,
     size: 60,
     blending: THREE.NormalBlending,
     transparent:true,
