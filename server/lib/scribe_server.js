@@ -51,18 +51,21 @@ function processMsg(msg) {
 
   te = obj.telescope;
 
+  if (!te) {
+    return;
+  }
+
   dns.lookup(te.target, 4, function(err, address) {
     if (err) {
-      console.error(err);
       return;
     }
     try {
       geo = gi.lookup(address);
     }
     catch(e) {
-      console.error(te.monitoringZoneId + ' -> ' + te.target, address, geo);
-      util.puts(util.inspect(obj, false, 8));
-      console.error(e);
+      //console.error(te.monitoringZoneId + ' -> ' + te.target, address, geo);
+      //util.puts(util.inspect(obj, false, 8));
+      //console.error(e);
       // process.exit();
     }
     if (geo) {
